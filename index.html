@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Freight Timing Decisions</title>
-<meta name="description" content="Thomas James, GMBA 634 term project: two freight decisions from public BTS data, on when to book grain barges and how to size port berths.">
+<meta name="description" content="Thomas James, GMBA 634 term project: when to book grain barge capacity, from public BTS data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -90,21 +90,21 @@
 <header class="top">
   <div class="wrap">
     <span><strong>Thomas James</strong> · GMBA 634 term project · Gannon University</span>
-    <nav aria-label="Sections"><a href="#barges">Barges</a><a href="#ports">Ports</a><a href="#work">The work</a><a href="#ai">AI use</a></nav>
+    <nav aria-label="Sections"><a href="#barges">Barges</a><a href="#years">By year</a><a href="#work">The work</a><a href="#ai">AI use</a></nav>
   </div>
 </header>
 
 <main>
   <div class="wrap hero">
     <p class="eyebrow">Freight timing, from public BTS data</p>
-    <h1>Book barges before harvest. Size berths by boxes, not ships.</h1>
+    <h1>Book grain barges before harvest.</h1>
     <p class="ask">I am asking a grain exporter's transportation buyer to contract fall 2027 barge capacity out of St. Louis by July 2027, instead of buying on the spot market at harvest.</p>
     <p class="byline">Thomas James, MBA student. I turn public freight data into decisions a manager can act on. This is a class project, not paid or client work.</p>
     <div class="stats">
       <div class="stat r"><b>$9.96</b><span>per ton: St. Louis barge rate, June average, 2019 to 2025</span></div>
       <div class="stat h"><b>$31.11</b><span>per ton: the October average, 3.1 times June</span></div>
-      <div class="stat r"><b>−16.1%</b><span>container volume at the top 10 US ports, 2021 to 2023</span></div>
-      <div class="stat h"><b>+2.2%</b><span>container ship calls at the same ports, same years</span></div>
+      <div class="stat r"><b>7 of 8</b><span>years where fall cost more than summer (2019 to 2026)</span></div>
+      <div class="stat h"><b>$105.86</b><span>per ton: the worst week, in fall 2022</span></div>
     </div>
   </div>
 
@@ -113,9 +113,9 @@
       <h2>The four deliverables</h2>
       <p class="lead">Everything for the project is here. Each card opens one piece.</p>
       <div class="cards">
-        <a class="card" href="./dashboard/main-chart.png"><div class="n">1</div><h3>Business visualization</h3><p>Barge rates by month (main chart), plus port volume versus ship calls. Made in Python; a Tableau Public version is coming.</p></a>
-        <a class="card" href="./case/executive-case.pdf"><div class="n">2</div><h3>Written executive case</h3><p>Book fall barge space by July, and size new container berths by TEU volume, not ship calls. PDF, 3 pages.</p></a>
-        <a class="card" href="./ai-component/ai-check.pdf"><div class="n">3</div><h3>AI/automation component</h3><p>Path B: what the AI did, every number I checked, and the two places it was wrong.</p></a>
+        <a class="card" href="./dashboard/main-chart.png"><div class="n">1</div><h3>Business visualization</h3><p>Barge rates by month (main chart), plus summer versus fall by year below. Made in Python; a Tableau Public version is coming.</p></a>
+        <a class="card" href="./case/executive-case.pdf"><div class="n">2</div><h3>Written executive case</h3><p>Book fall barge space by July, when rates are seasonally lowest. PDF, 2 pages.</p></a>
+        <a class="card" href="./ai-component/ai-check.pdf"><div class="n">3</div><h3>AI/automation component</h3><p>Path B: what the AI did, every number I checked, and where it was wrong.</p></a>
         <a class="card" href="https://github.com/thomasjamesmu/gmba634-term-project"><div class="n">4</div><h3>This site and repository</h3><p>The repo holds the charts, the PDFs and the pivot tables behind every number.</p></a>
       </div>
     </div>
@@ -123,11 +123,11 @@
 
   <section id="barges">
     <div class="wrap">
-      <p class="eyebrow">Decision 1 · dataset OP-2</p>
-      <h2>Grain barge rates triple from June to October</h2>
+      <p class="eyebrow">The pattern · dataset OP-2</p>
+      <h2>Barge rates triple from June to October</h2>
       <div class="scqr">
-        <p><strong>Situation.</strong> Grain moving down the Mississippi River System to export terminals is priced weekly, in dollars per ton, at seven river origins.</p>
-        <p><strong>Complication.</strong> The rate is highly seasonal. At St. Louis, from 2019 to 2025, it averaged $9.96 per ton in June and $31.11 in October. October was the most expensive month at all seven origins. In a bad year the peak is far worse: the October 2022 St. Louis average was $89.33.</p>
+        <p><strong>Situation.</strong> Grain moves down the Mississippi River System to export terminals on barges, priced weekly in dollars per ton at seven river origins. A buyer can book ahead or pay the spot rate when the grain moves.</p>
+        <p><strong>Complication.</strong> The rate peaks exactly when grain must move. At St. Louis, from 2019 to 2025, it averaged $9.96 per ton in June and $31.11 in October. October was the most expensive month at all seven origins.</p>
         <p><strong>Question.</strong> Should the buyer keep buying fall space on the spot market at harvest?</p>
         <p><strong>Resolution.</strong> Contract most fall 2027 capacity by July 2027, when rates are seasonally lowest, and keep a small spot share for flexibility.</p>
       </div>
@@ -135,41 +135,35 @@
         <img src="./dashboard/main-chart.png" alt="Bar chart of the average downbound grain barge rate from St. Louis by calendar month, 2019 to 2025. Rates are lowest in May to July (about $10 to $12 per ton) and highest in September to November, peaking at $31.11 in October." loading="lazy">
         <figcaption>Weekly St. Louis rates averaged by calendar month, 2019 to 2025. Source: BTS Supply Chain and Freight Indicators (USDA AMS data).</figcaption>
       </figure>
-      <div class="note">
-        <p><b>What would change my recommendation:</b> if the forward price offered in July 2027 is above $25.79 per ton, the 2019 to 2025 September to November spot average at St. Louis.</p>
-      </div>
     </div>
   </section>
 
-  <section id="ports">
+  <section id="years">
     <div class="wrap">
-      <p class="eyebrow">Decision 2 · dataset OP-3</p>
-      <h2>Ships kept calling while container volume fell</h2>
-      <p class="ask">I am asking a port authority's capital planning committee to base its next container-berth expansion on container volume (TEUs), not on the count of ship calls, at its 2027 capital review.</p>
-      <p class="lead">At the 10 largest US container ports, volume fell from 36.44 million to 30.57 million TEUs between 2021 and 2023, while container ship calls rose from 11,052 to 11,300. Each call handled fewer boxes: 2,705 TEUs per call in 2023, down from 3,297. Houston was the only one of the ten where volume grew.</p>
+      <p class="eyebrow">The risk · year by year</p>
+      <h2>It is not one bad year</h2>
+      <p class="lead">Fall (September to November) cost more than summer (May to July) at St. Louis in 7 of the last 8 years. The exception was 2019, when most summer weeks have no published rate. In 2022 the fall average reached $55.74, 3.95 times that summer's $14.10. A buyer who waits for harvest carries that risk in full.</p>
       <figure>
-        <img src="./dashboard/ports-chart.png" alt="Horizontal bar chart comparing the 2021 to 2023 change in container volume and in container vessel calls at the 10 largest US container ports. Volume fell at nine of the ten ports while calls rose at six of them." loading="lazy">
-        <figcaption>Top 10 ports by 2023 container TEUs. Source: BTS Port Data.</figcaption>
+        <img src="./dashboard/summer-vs-fall-chart.png" alt="Grouped bar chart of the average St. Louis barge rate in summer (May to July) and fall (September to November) for each year from 2019 to 2026. Fall is higher in every year except 2019, with the largest gap in 2022 ($14 summer versus $56 fall)." loading="lazy">
+        <figcaption>Week-weighted averages of weekly St. Louis rates; 2026 runs to Nov 10. Source: BTS Supply Chain and Freight Indicators (USDA AMS data).</figcaption>
       </figure>
       <div class="tablewrap">
         <table>
-          <thead><tr><th>Port</th><th class="num">TEUs 2021</th><th class="num">TEUs 2023</th><th class="num">Change</th><th class="num">Calls 2021</th><th class="num">Calls 2023</th><th class="num">Change</th></tr></thead>
+          <thead><tr><th>Year</th><th class="num">Summer, $/ton</th><th class="num">Fall, $/ton</th><th class="num">Fall ÷ summer</th></tr></thead>
           <tbody>
-            <tr><td>Los Angeles</td><td class="num">7,037,986</td><td class="num">5,726,784</td><td class="num">−18.6%</td><td class="num">876.5</td><td class="num">871</td><td class="num">−0.6%</td></tr>
-            <tr><td>New York / New Jersey</td><td class="num">6,306,810</td><td class="num">5,343,184</td><td class="num">−15.3%</td><td class="num">2,096.5</td><td class="num">2,253.5</td><td class="num">+7.5%</td></tr>
-            <tr><td>Long Beach</td><td class="num">6,420,456</td><td class="num">4,786,383</td><td class="num">−25.5%</td><td class="num">895</td><td class="num">656.5</td><td class="num">−26.6%</td></tr>
-            <tr><td>Savannah</td><td class="num">4,235,900</td><td class="num">3,774,774</td><td class="num">−10.9%</td><td class="num">1,501.5</td><td class="num">1,594</td><td class="num">+6.2%</td></tr>
-            <tr><td>Houston</td><td class="num">2,767,842</td><td class="num">3,209,304</td><td class="num">+15.9%</td><td class="num">930</td><td class="num">1,014</td><td class="num">+9.0%</td></tr>
-            <tr><td>Virginia</td><td class="num">2,769,965</td><td class="num">2,499,394</td><td class="num">−9.8%</td><td class="num">1,432</td><td class="num">1,664</td><td class="num">+16.2%</td></tr>
-            <tr><td>Charleston</td><td class="num">2,172,194</td><td class="num">1,917,209</td><td class="num">−11.7%</td><td class="num">1,248.5</td><td class="num">1,220.5</td><td class="num">−2.2%</td></tr>
-            <tr><td>Oakland</td><td class="num">1,957,162</td><td class="num">1,446,495</td><td class="num">−26.1%</td><td class="num">768.5</td><td class="num">884</td><td class="num">+15.0%</td></tr>
-            <tr><td>Tacoma</td><td class="num">1,848,497</td><td class="num">1,040,830</td><td class="num">−43.7%</td><td class="num">443.5</td><td class="num">273.5</td><td class="num">−38.3%</td></tr>
-            <tr><td>PortMiami</td><td class="num">920,374</td><td class="num">824,202</td><td class="num">−10.4%</td><td class="num">860</td><td class="num">869</td><td class="num">+1.0%</td></tr>
+            <tr><td>2019</td><td class="num">13.97</td><td class="num">12.42</td><td class="num">0.89</td></tr>
+            <tr><td>2020</td><td class="num">7.87</td><td class="num">16.55</td><td class="num">2.10</td></tr>
+            <tr><td>2021</td><td class="num">8.97</td><td class="num">22.19</td><td class="num">2.47</td></tr>
+            <tr><td>2022</td><td class="num">14.10</td><td class="num">55.74</td><td class="num">3.95</td></tr>
+            <tr><td>2023</td><td class="num">9.66</td><td class="num">26.50</td><td class="num">2.74</td></tr>
+            <tr><td>2024</td><td class="num">9.54</td><td class="num">26.67</td><td class="num">2.80</td></tr>
+            <tr><td>2025</td><td class="num">14.05</td><td class="num">20.87</td><td class="num">1.49</td></tr>
+            <tr><td>2026 (to Nov 10)</td><td class="num">17.78</td><td class="num">27.39</td><td class="num">1.54</td></tr>
           </tbody>
         </table>
       </div>
       <div class="note">
-        <p><b>What would change my recommendation:</b> if a port's TEU volume returns above its 2021 level while calls keep rising, the berths really are busier. Houston already meets this test.</p>
+        <p><b>What would change my recommendation:</b> if the forward price offered in July 2027 is above $25.79 per ton, the 2019 to 2025 September to November spot average at St. Louis, locking in no longer beats the typical fall spot price.</p>
       </div>
     </div>
   </section>
@@ -177,7 +171,7 @@
   <section id="ai">
     <div class="wrap">
       <h2>AI use disclosure</h2>
-      <p class="lead">Claude, an AI assistant, downloaded both datasets from data.bts.gov, filtered and pivoted them with Python scripts, drew both charts, and drafted this site, the README, the executive case and the AI check. I chose the two datasets from the course menu and approve what is published. Every number here is checked against the pivot files in the repository's analysis folder. The AI made two mistakes that were fixed before publishing. It saved raw files the course menu marks link-only, for two datasets I later dropped, and it first included small ports whose numbers look like reporting breaks. Details are in the <a href="./ai-component/ai-check.pdf">AI check</a>.</p>
+      <p class="lead">Claude, an AI assistant, downloaded the dataset from data.bts.gov, filtered and pivoted it with Python scripts, drew both charts, and drafted this site, the README, the executive case and the AI check. I chose the dataset from the course menu and approve what is published. Every number here is checked against the pivot files in the repository's analysis folder. One mistake was fixed before publishing: early on, the AI saved raw files the course menu marks link-only, for datasets I later dropped; they were removed before any commit. Details are in the <a href="./ai-component/ai-check.pdf">AI check</a>.</p>
     </div>
   </section>
 
@@ -185,8 +179,9 @@
     <div class="wrap">
       <h2>Data and honesty note</h2>
       <div class="scqr">
-        <p><strong>OP-2.</strong> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a>, indicator "Downbound Grain Barge Rates" (from USDA Agricultural Marketing Service). Accessed Nov 23, 2026. Public Domain U.S. Government. One row is one week's spot rate at one origin, Jan 2019 to Nov 10, 2026. I kept the 2,605 weeks that have a rate. It does not show contract prices or any firm's own costs.</p>
-        <p><strong>OP-3.</strong> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/5rpz-kgm9">Port Data</a>. Accessed Nov 23, 2026. Public Domain. One row is one port, one year and one cargo measure. The data end in 2023, calls exist only for 2020 to 2023, and some calls are recorded in halves; I used them as published. It does not show ship size or berth hours.</p>
+        <p><strong>Source.</strong> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a>, indicator "Downbound Grain Barge Rates" (from USDA Agricultural Marketing Service). Course menu ID OP-2. Accessed Nov 23, 2026. Public Domain U.S. Government.</p>
+        <p><strong>What one row means.</strong> One week's spot rate, in dollars per ton, at one of seven river origins, Jan 2019 to Nov 10, 2026. I kept the 2,605 weeks that have a rate (272 of 2,877 are blank).</p>
+        <p><strong>What it cannot show.</strong> Contract or forward prices, any firm's own costs, or why rates move. River levels and harvest size are likely causes, but that is reasoning, not a finding in this data.</p>
       </div>
     </div>
   </section>
