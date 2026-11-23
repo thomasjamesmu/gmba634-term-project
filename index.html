@@ -3,194 +3,362 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Freight Timing Decisions</title>
-<meta name="description" content="Thomas James, GMBA 634 term project: when to book grain barge capacity, from public BTS data.">
+<title>Book Barges Before Harvest</title>
+<meta name="description" content="Thomas James, GMBA 634 term project: when a grain exporter should buy barge capacity, from seven years of public BTS barge rates.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fbfaf6;
-    --surface: #ffffff;
-    --ink: #13223a;
-    --muted: #55627a;
-    --line: #dfe2e8;
-    --river: #1d4ed8;
-    --harvest: #c2410c;
-    --soft: #f1efe7;
-    --serif: "Fraunces", Georgia, serif;
-    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0f1726; --surface: #16213a; --ink: #eef1f6; --muted: #a9b3c6;
-      --line: #2a3654; --river: #7aa2ff; --harvest: #fb8a4c; --soft: #1b2742;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0f1726; --surface: #16213a; --ink: #eef1f6; --muted: #a9b3c6;
-    --line: #2a3654; --river: #7aa2ff; --harvest: #fb8a4c; --soft: #1b2742;
+    --paper: #f6f4ef;
+    --ink: #1b2a3a;
+    --muted: #586476;
+    --rule: #d8d3c8;
+    --river: #1f5fa8;
+    --harvest: #c8641a;
+    --display: "Oswald", "Arial Narrow", sans-serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(.22, .9, .28, 1);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 1.0625rem; line-height: 1.65; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1.08rem; line-height: 1.6; }
   a { color: var(--river); text-underline-offset: 3px; }
+  a:hover { color: var(--ink); }
   a:focus-visible { outline: 3px solid var(--harvest); outline-offset: 3px; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
-  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 28px; } }
 
-  header.top { border-bottom: 1px solid var(--line); font-size: .92rem; color: var(--muted); }
-  header.top .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem; padding-top: .9rem; padding-bottom: .9rem; }
-  header.top strong { color: var(--ink); font-weight: 600; }
-  nav a { margin-right: 1rem; text-decoration: none; color: var(--muted); }
-  nav a:hover { color: var(--ink); }
+  #meter { position: fixed; left: 0; top: 0; height: 4px; width: 100%; background: linear-gradient(90deg, var(--river), var(--harvest)); transform: scaleX(0); transform-origin: left; z-index: 20; }
 
-  .hero { padding: 3.5rem 0 2.5rem; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; font-weight: 600; color: var(--harvest); margin: 0 0 .8rem; }
-  h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(2.1rem, 6vw, 3.8rem); line-height: 1.05; margin: 0 0 1.5rem; max-width: 20ch; }
-  .ask { border-left: 4px solid var(--harvest); padding: .4rem 0 .4rem 1.1rem; font-size: clamp(1.1rem, 2.4vw, 1.35rem); line-height: 1.5; max-width: 60ch; margin: 0 0 1.5rem; }
-  .byline { color: var(--muted); max-width: 62ch; margin: 0; }
+  .top { border-bottom: 1px solid var(--rule); font-size: .95rem; }
+  .top .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; padding-top: .9rem; padding-bottom: .9rem; }
 
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2.2rem 0 0; }
-  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.2rem; }
-  .stat b { display: block; font-family: var(--serif); font-size: 2.1rem; line-height: 1.1; }
-  .stat span { color: var(--muted); font-size: .92rem; }
-  .stat.h b { color: var(--harvest); } .stat.r b { color: var(--river); }
+  .hero { padding: 3.6rem 0 2.4rem; }
+  .kicker { font-family: var(--display); font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--harvest); font-size: .9rem; margin: 0 0 1rem; }
+  h1 { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(2.5rem, 8.5vw, 6.2rem); line-height: .95; margin: 0 0 1.6rem; max-width: 14ch; }
+  h1 .ln { display: block; overflow: hidden; }
+  h1 .ln span { display: inline-block; transform: translateY(110%); animation: up .9s var(--ease) forwards; animation-delay: calc(var(--i) * 140ms + 100ms); }
+  h1 .ln:last-child span { color: var(--river); }
+  @keyframes up { to { transform: none; } }
+  .ask { font-size: clamp(1.15rem, 2.4vw, 1.4rem); line-height: 1.5; max-width: 58ch; margin: 0 0 2.4rem; border-left: 5px solid var(--harvest); padding-left: 1rem; opacity: 0; animation: fade .8s ease forwards 1s; }
+  @keyframes fade { to { opacity: 1; } }
 
-  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.15; margin: 0 0 1rem; }
-  section { padding: 2.8rem 0; border-top: 1px solid var(--line); }
-  .lead { max-width: 66ch; }
-  figure { margin: 1.6rem 0 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: .75rem; }
-  figure img { display: block; width: 100%; height: auto; }
-  figcaption { color: #55627a; font-size: .88rem; padding: .6rem .3rem 0; }
+  .stats { list-style: none; margin: 0 0 1.4rem; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.2rem 1.4rem; }
+  .stats li { border-top: 6px solid var(--c); padding-top: .7rem; opacity: 0; transform: translateY(12px); animation: lift .7s var(--ease) forwards; animation-delay: calc(1.25s + var(--i) * 110ms); }
+  @keyframes lift { to { opacity: 1; transform: none; } }
+  .stats a { color: var(--ink); text-decoration: none; display: block; }
+  .stats a:hover .lab { text-decoration: underline; }
+  .stats .big { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(2.1rem, 4vw, 3.2rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stats .lab { display: block; margin-top: .35rem; color: var(--muted); font-size: .92rem; line-height: 1.35; }
+  .r { --c: var(--river); } .h { --c: var(--harvest); }
+  @media (max-width: 960px) { .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tip-keys { color: var(--muted); font-size: .9rem; margin: 0; }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.4rem; }
-  .card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem; text-decoration: none; color: var(--ink); transition: border-color .2s, transform .2s; }
-  .card:hover { border-color: var(--river); transform: translateY(-2px); }
-  .card .n { font-family: var(--serif); color: var(--harvest); font-size: 1.4rem; }
-  .card h3 { margin: .2rem 0 .4rem; font-size: 1.05rem; }
-  .card p { margin: 0; color: var(--muted); font-size: .94rem; }
+  .check { margin-top: 2rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
+  .check h2 { font-family: var(--body); font-size: 1rem; font-weight: 600; margin: 0 0 .6rem; }
+  .check ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .7rem 1.5rem; }
+  .check li { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+  .check li a { color: var(--ink); font-weight: 600; }
 
-  .scqr { display: grid; gap: .9rem; margin-top: 1.2rem; max-width: 72ch; }
-  .scqr p { margin: 0; }
-  .scqr strong { color: var(--harvest); }
-  .note { background: var(--soft); border-radius: 12px; padding: 1.1rem 1.3rem; margin-top: 1.4rem; max-width: 72ch; }
-  .note p { margin: .3rem 0; }
+  .band { padding: 3.2rem 0 .5rem; }
+  .band-title { display: flex; align-items: center; gap: .9rem; margin: 0 0 1.6rem; }
+  .band-title::before { content: ""; width: 12px; height: 2.4rem; background: var(--c); transform: scaleY(0); transform-origin: bottom; transition: transform .7s var(--ease); }
+  .band-title.seen::before { transform: scaleY(1); }
+  .band-title h2 { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(1.9rem, 5vw, 2.9rem); line-height: 1; margin: 0; }
 
-  table { border-collapse: collapse; width: 100%; font-size: .92rem; margin-top: 1rem; }
-  .tablewrap { overflow-x: auto; }
-  th, td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { color: var(--muted); font-weight: 600; }
-  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .finding { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 2.4rem; padding: 2.2rem 0 2.6rem; border-top: 1px solid var(--rule); align-items: start; scroll-margin-top: 1rem; }
+  @media (max-width: 820px) { .finding { grid-template-columns: 1fr; gap: 1.2rem; } }
+  .finding h3 { font-family: var(--display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.15rem); line-height: 1.1; margin: 0 0 .9rem; }
+  .finding p { margin: 0 0 1rem; max-width: 52ch; }
+  .src { color: var(--muted); font-size: .94rem; }
 
-  footer { border-top: 1px solid var(--line); padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; }
+  figure.viz { position: relative; margin: 0; background: #fff; border: 1px solid var(--rule); padding: .6rem .6rem .3rem; min-height: 230px; }
+  figure.viz svg { display: block; width: 100%; height: auto; overflow: visible; }
+  figure.viz noscript img { display: block; width: 100%; height: auto; }
+  .bubble { position: absolute; pointer-events: none; background: var(--ink); color: #fff; font-size: .85rem; padding: .35rem .55rem; border-radius: 3px; white-space: nowrap; opacity: 0; transition: opacity .12s; z-index: 3; }
+  .bubble.on { opacity: 1; }
+  .grow { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); }
+  .growx { transform-box: fill-box; transform-origin: left; transform: scaleX(0); }
+  .seen .grow { transform: scaleY(1); transition: transform .85s var(--ease) var(--d, 0s); }
+  .seen .growx { transform: scaleX(1); transition: transform .85s var(--ease) var(--d, 0s); }
+  .trace { fill: none; stroke-width: 2.6; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .seen .trace { stroke-dashoffset: 0; transition: stroke-dashoffset 2s cubic-bezier(.45, .1, .25, 1); }
+  .late { opacity: 0; } .seen .late { opacity: 1; transition: opacity .6s ease 1.4s; }
+
+  .closing { border-top: 1px solid var(--rule); padding: 3rem 0 1rem; margin-top: 1.5rem; scroll-margin-top: 1rem; }
+  .closing h2 { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(1.9rem, 5vw, 2.9rem); line-height: 1; margin: 0 0 1.2rem; }
+  .closing p, .closing li { max-width: 68ch; }
+  .closing ul { padding-left: 1.2rem; }
+  .reverse { background: #fff; border-left: 5px solid var(--river); padding: 1rem 1.2rem; max-width: 68ch; margin: 1.2rem 0; }
+  .reverse p { margin: 0; }
+
+  footer { border-top: 1px solid var(--rule); padding: 1.6rem 0 3rem; color: var(--muted); font-size: .95rem; margin-top: 2rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    h1 .ln span, .ask, .stats li { animation: none; opacity: 1; transform: none; }
+    .band-title::before, .grow, .growx { transform: none; transition: none; }
+    .trace { stroke-dashoffset: 0; transition: none; }
+    .late { opacity: 1; transition: none; }
+  }
 </style>
 </head>
 <body>
+<div id="meter" aria-hidden="true"></div>
+
 <header class="top">
   <div class="wrap">
-    <span><strong>Thomas James</strong> · GMBA 634 term project · Gannon University</span>
-    <nav aria-label="Sections"><a href="#barges">Barges</a><a href="#years">By year</a><a href="#work">The work</a><a href="#ai">AI use</a></nav>
+    <strong>Thomas James · GMBA 634 term project</strong>
+    <a href="https://github.com/thomasjamesmu/gmba634-term-project">View the GitHub repository</a>
   </div>
 </header>
 
 <main>
-  <div class="wrap hero">
-    <p class="eyebrow">Freight timing, from public BTS data</p>
-    <h1>Book grain barges before harvest.</h1>
-    <p class="ask">I am asking a grain exporter's transportation buyer to contract fall 2027 barge capacity out of St. Louis by July 2027, instead of buying on the spot market at harvest.</p>
-    <p class="byline">Thomas James, MBA student. I turn public freight data into decisions a manager can act on. This is a class project, not paid or client work.</p>
-    <div class="stats">
-      <div class="stat r"><b>$9.96</b><span>per ton: St. Louis barge rate, June average, 2019 to 2025</span></div>
-      <div class="stat h"><b>$31.11</b><span>per ton: the October average, 3.1 times June</span></div>
-      <div class="stat r"><b>7 of 8</b><span>years where fall cost more than summer (2019 to 2026)</span></div>
-      <div class="stat h"><b>$105.86</b><span>per ton: the worst week, in fall 2022</span></div>
-    </div>
-  </div>
-
-  <section id="work">
+  <section class="hero" data-stop>
     <div class="wrap">
-      <h2>The four deliverables</h2>
-      <p class="lead">Everything for the project is here. Each card opens one piece.</p>
-      <div class="cards">
-        <a class="card" href="./dashboard/main-chart.png"><div class="n">1</div><h3>Business visualization</h3><p>Barge rates by month (main chart), plus summer versus fall by year below. Made in Python; a Tableau Public version is coming.</p></a>
-        <a class="card" href="./case/executive-case.pdf"><div class="n">2</div><h3>Written executive case</h3><p>Book fall barge space by July, when rates are seasonally lowest. PDF, 2 pages.</p></a>
-        <a class="card" href="./ai-component/ai-check.pdf"><div class="n">3</div><h3>AI/automation component</h3><p>Path B: what the AI did, every number I checked, and where it was wrong.</p></a>
-        <a class="card" href="https://github.com/thomasjamesmu/gmba634-term-project"><div class="n">4</div><h3>This site and repository</h3><p>The repo holds the charts, the PDFs and the pivot tables behind every number.</p></a>
-      </div>
-    </div>
-  </section>
-
-  <section id="barges">
-    <div class="wrap">
-      <p class="eyebrow">The pattern · dataset OP-2</p>
-      <h2>Barge rates triple from June to October</h2>
-      <div class="scqr">
-        <p><strong>Situation.</strong> Grain moves down the Mississippi River System to export terminals on barges, priced weekly in dollars per ton at seven river origins. A buyer can book ahead or pay the spot rate when the grain moves.</p>
-        <p><strong>Complication.</strong> The rate peaks exactly when grain must move. At St. Louis, from 2019 to 2025, it averaged $9.96 per ton in June and $31.11 in October. October was the most expensive month at all seven origins.</p>
-        <p><strong>Question.</strong> Should the buyer keep buying fall space on the spot market at harvest?</p>
-        <p><strong>Resolution.</strong> Contract most fall 2027 capacity by July 2027, when rates are seasonally lowest, and keep a small spot share for flexibility.</p>
-      </div>
-      <figure>
-        <img src="./dashboard/main-chart.png" alt="Bar chart of the average downbound grain barge rate from St. Louis by calendar month, 2019 to 2025. Rates are lowest in May to July (about $10 to $12 per ton) and highest in September to November, peaking at $31.11 in October." loading="lazy">
-        <figcaption>Weekly St. Louis rates averaged by calendar month, 2019 to 2025. Source: BTS Supply Chain and Freight Indicators (USDA AMS data).</figcaption>
-      </figure>
+      <p class="kicker">Mississippi River grain barge rates, 2019 to 2026</p>
+      <h1><span class="ln"><span style="--i:0">Book barges</span></span><span class="ln"><span style="--i:1">before harvest</span></span></h1>
+      <p class="ask">I am asking a grain exporter's transportation buyer to contract fall 2027 barge capacity out of St. Louis by July 2027, instead of buying on the spot market at harvest.</p>
+      <ul class="stats" aria-label="The findings in numbers">
+        <li class="r" style="--i:0"><a href="#months"><span class="big" data-to="9.96" data-pre="$" data-dec="2">$9.96</span><span class="lab">per ton in June, the cheapest month at St. Louis</span></a></li>
+        <li class="h" style="--i:1"><a href="#months"><span class="big" data-to="31.11" data-pre="$" data-dec="2">$31.11</span><span class="lab">per ton in October, the dearest month</span></a></li>
+        <li class="h" style="--i:2"><a href="#years"><span class="big">7 of 8</span><span class="lab">years where fall cost more than summer</span></a></li>
+        <li class="r" style="--i:3"><a href="#origins"><span class="big">7 of 7</span><span class="lab">river origins dearer in October than June</span></a></li>
+        <li class="h" style="--i:4"><a href="#spike"><span class="big" data-to="89.33" data-pre="$" data-dec="2">$89.33</span><span class="lab">October 2022 average, the extreme case</span></a></li>
+      </ul>
+      <p class="tip-keys">Presenting? Use the arrow keys to step through the findings.</p>
+      <section class="check" aria-label="Project deliverables">
+        <h2>Where to check the work</h2>
+        <ul>
+          <li><a href="./case/executive-case.pdf">Executive case (PDF)</a><br>The ask, the evidence and the reversal price, in 2 pages.</li>
+          <li><a href="./ai-component/ai-check.pdf">AI check (PDF)</a><br>What the AI did, each number checked, and where it was wrong.</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/analysis/number-trail.md">Number trail</a><br>One line for every number on this page, with its pivot cell.</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/barge-rates.md">Dataset page</a><br>What one row means, filters and limits.</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/data/SOURCES.md">Sources</a><br>Publisher, link, date accessed and license.</li>
+        </ul>
+      </section>
     </div>
   </section>
 
-  <section id="years">
+  <section class="band r" aria-labelledby="pattern-h">
     <div class="wrap">
-      <p class="eyebrow">The risk · year by year</p>
-      <h2>It is not one bad year</h2>
-      <p class="lead">Fall (September to November) cost more than summer (May to July) at St. Louis in 7 of the last 8 years. The exception was 2019, when most summer weeks have no published rate. In 2022 the fall average reached $55.74, 3.95 times that summer's $14.10. A buyer who waits for harvest carries that risk in full.</p>
-      <figure>
-        <img src="./dashboard/summer-vs-fall-chart.png" alt="Grouped bar chart of the average St. Louis barge rate in summer (May to July) and fall (September to November) for each year from 2019 to 2026. Fall is higher in every year except 2019, with the largest gap in 2022 ($14 summer versus $56 fall)." loading="lazy">
-        <figcaption>Week-weighted averages of weekly St. Louis rates; 2026 runs to Nov 10. Source: BTS Supply Chain and Freight Indicators (USDA AMS data).</figcaption>
-      </figure>
-      <div class="tablewrap">
-        <table>
-          <thead><tr><th>Year</th><th class="num">Summer, $/ton</th><th class="num">Fall, $/ton</th><th class="num">Fall ÷ summer</th></tr></thead>
-          <tbody>
-            <tr><td>2019</td><td class="num">13.97</td><td class="num">12.42</td><td class="num">0.89</td></tr>
-            <tr><td>2020</td><td class="num">7.87</td><td class="num">16.55</td><td class="num">2.10</td></tr>
-            <tr><td>2021</td><td class="num">8.97</td><td class="num">22.19</td><td class="num">2.47</td></tr>
-            <tr><td>2022</td><td class="num">14.10</td><td class="num">55.74</td><td class="num">3.95</td></tr>
-            <tr><td>2023</td><td class="num">9.66</td><td class="num">26.50</td><td class="num">2.74</td></tr>
-            <tr><td>2024</td><td class="num">9.54</td><td class="num">26.67</td><td class="num">2.80</td></tr>
-            <tr><td>2025</td><td class="num">14.05</td><td class="num">20.87</td><td class="num">1.49</td></tr>
-            <tr><td>2026 (to Nov 10)</td><td class="num">17.78</td><td class="num">27.39</td><td class="num">1.54</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="note">
-        <p><b>What would change my recommendation:</b> if the forward price offered in July 2027 is above $25.79 per ton, the 2019 to 2025 September to November spot average at St. Louis, locking in no longer beats the typical fall spot price.</p>
-      </div>
+      <div class="band-title"><h2 id="pattern-h">The seasonal pattern</h2></div>
+
+      <article class="finding" id="months" data-stop>
+        <div>
+          <h3>Rates triple from June to October</h3>
+          <p>From 2019 to 2025, the St. Louis barge rate averaged $9.96 per ton in June and $31.11 in October, 3.1 times as much. September to November averaged $25.79. The cheap window is May to July, before harvest.</p>
+          <p class="src">BTS Supply Chain and Freight Indicators, Downbound Grain Barge Rates (USDA AMS). Weekly rates averaged by calendar month.</p>
+        </div>
+        <figure class="viz" data-viz="months" role="img" aria-label="Bar chart of the average St. Louis barge rate by month, 2019 to 2025: January $15.84, February $15.20, March $15.42, April $12.92, May $10.67, June $9.96, July $12.10, August $15.20, September $24.87, October $31.11, November $21.40, December $17.76.">
+          <noscript><img src="dashboard/main-chart.png" alt="Average St. Louis barge rate by month, 2019 to 2025"></noscript>
+        </figure>
+      </article>
+
+      <article class="finding" id="origins" data-stop>
+        <div>
+          <h3>Every origin peaks in October</h3>
+          <p>October was the most expensive month at all seven river origins BTS reports. Cairo-Memphis and St. Louis were the most seasonal, at 3.1 times their June rate. Twin Cities was the least, at 1.7 times.</p>
+          <p class="src">Same source, June and October averages for each origin, 2019 to 2025. Twin Cities and Mid-Mississippi have no winter rates because the upper river closes.</p>
+        </div>
+        <figure class="viz" data-viz="origins" role="img" aria-label="Paired bar chart of June and October average barge rates for seven river origins. October is higher at every origin; the October-to-June ratio ranges from 1.7 at Twin Cities to 3.1 at Cairo-Memphis and St. Louis.">
+          <noscript><img src="dashboard/origins-chart.png" alt="June and October barge rates by origin"></noscript>
+        </figure>
+      </article>
     </div>
   </section>
 
-  <section id="ai">
+  <section class="band h" aria-labelledby="risk-h">
     <div class="wrap">
-      <h2>AI use disclosure</h2>
-      <p class="lead">Claude, an AI assistant, downloaded the dataset from data.bts.gov, filtered and pivoted it with Python scripts, drew both charts, and drafted this site, the README, the executive case and the AI check. I chose the dataset from the course menu and approve what is published. Every number here is checked against the pivot files in the repository's analysis folder. One mistake was fixed before publishing: early on, the AI saved raw files the course menu marks link-only, for datasets I later dropped; they were removed before any commit. Details are in the <a href="./ai-component/ai-check.pdf">AI check</a>.</p>
+      <div class="band-title"><h2 id="risk-h">The risk of waiting</h2></div>
+
+      <article class="finding" id="years" data-stop>
+        <div>
+          <h3>It is not one bad year</h3>
+          <p>Fall (September to November) cost more than summer (May to July) at St. Louis in 7 of the last 8 years. The one exception was 2019, when most summer weeks have no published rate.</p>
+          <p class="src">Week-weighted averages of weekly St. Louis rates. 2026 runs to November 10.</p>
+        </div>
+        <figure class="viz" data-viz="years" role="img" aria-label="Grouped bar chart of summer and fall average St. Louis barge rates by year. 2019: $13.97 summer, $12.42 fall. 2020: $7.87, $16.55. 2021: $8.97, $22.19. 2022: $14.10, $55.74. 2023: $9.66, $26.50. 2024: $9.54, $26.67. 2025: $14.05, $20.87. 2026: $17.78, $27.39.">
+          <noscript><img src="dashboard/summer-vs-fall-chart.png" alt="Summer versus fall barge rates by year"></noscript>
+        </figure>
+      </article>
+
+      <article class="finding" id="spike" data-stop>
+        <div>
+          <h3>And sometimes the spike is extreme</h3>
+          <p>In October 2022 the St. Louis monthly average reached $89.33 per ton, and the worst single week hit $105.86. That fall averaged $55.74, almost four times that summer's $14.10. A buyer who waits for harvest carries that risk in full.</p>
+          <p class="src">Monthly averages of weekly St. Louis rates, January 2019 to November 10, 2026.</p>
+        </div>
+        <figure class="viz" data-viz="spike" role="img" aria-label="Line chart of the monthly average St. Louis barge rate from January 2019 to November 2026. The line rises every fall; the highest point is $89.33 in October 2022.">
+          <noscript><img src="dashboard/st-louis-monthly-chart.png" alt="Monthly St. Louis barge rate, 2019 to 2026"></noscript>
+        </figure>
+      </article>
     </div>
   </section>
 
-  <section id="data">
+  <section class="closing" id="decision" data-stop>
     <div class="wrap">
-      <h2>Data and honesty note</h2>
-      <div class="scqr">
-        <p><strong>Source.</strong> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a>, indicator "Downbound Grain Barge Rates" (from USDA Agricultural Marketing Service). Course menu ID OP-2. Accessed Nov 23, 2026. Public Domain U.S. Government.</p>
-        <p><strong>What one row means.</strong> One week's spot rate, in dollars per ton, at one of seven river origins, Jan 2019 to Nov 10, 2026. I kept the 2,605 weeks that have a rate (272 of 2,877 are blank).</p>
-        <p><strong>What it cannot show.</strong> Contract or forward prices, any firm's own costs, or why rates move. River levels and harvest size are likely causes, but that is reasoning, not a finding in this data.</p>
-      </div>
+      <h2>The recommendation</h2>
+      <p>Contract most fall 2027 barge capacity out of St. Louis by July 2027, when rates are seasonally lowest, and keep a small share on the spot market for flexibility. Review the split each July using that year's summer rates.</p>
+      <div class="reverse"><p><b>What would change my recommendation:</b> if the forward price offered in July 2027 is above $25.79 per ton, the 2019 to 2025 September to November spot average at St. Louis, locking in no longer beats the typical fall spot price.</p></div>
+    </div>
+  </section>
+
+  <section class="closing" id="method" data-stop>
+    <div class="wrap">
+      <h2>How this was made</h2>
+      <ul>
+        <li><b>Data:</b> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a>, indicator "Downbound Grain Barge Rates" (from USDA Agricultural Marketing Service). Course menu ID OP-2. Accessed November 23, 2026. Public Domain U.S. Government.</li>
+        <li><b>One row</b> is one week's spot rate, in dollars per ton, at one of seven river origins. I kept the 2,605 weeks that have a rate; 272 of 2,877 rows are blank.</li>
+        <li><b>What it cannot show:</b> contract or forward prices, any firm's own costs, or why rates move. River levels and harvest size are likely causes, but that is reasoning, not a finding in this data.</li>
+        <li><b>AI use:</b> Claude, an AI assistant, downloaded the data, built the pivots with scripts, drew the charts, and drafted this page, the README, the case and the AI check. I chose the dataset and approve what is published. Every number is checked against the pivot files; see the <a href="./ai-component/ai-check.pdf">AI check</a>. The charts are not Tableau charts.</li>
+      </ul>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap">
-    Thomas James · GMBA 634, Gannon University · <a href="https://github.com/thomasjamesmu/gmba634-term-project">Repository on GitHub</a> · <a href="https://github.com/thomasjamesmu">github.com/thomasjamesmu</a>
+    <span>Thomas James · GMBA 634, Gannon University · Class project, not paid or client work</span>
+    <a href="https://github.com/thomasjamesmu">github.com/thomasjamesmu</a>
   </div>
 </footer>
+
+<script>
+(function () {
+  "use strict";
+  var RIVER = "#1f5fa8", HARVEST = "#c8641a", INK = "#1b2a3a", MUTED = "#586476", RULE = "#e3dfd6", GREY = "#a7adb6";
+  var NS = "http://www.w3.org/2000/svg";
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function mk(tag, at, parent) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); if (parent) parent.appendChild(e); return e; }
+  function txt(parent, x, y, s, at) { var t = mk("text", Object.assign({ x: x, y: y, fill: MUTED, "font-size": FS, "font-family": "Source Sans 3, sans-serif" }, at || {}), parent); t.textContent = s; return t; }
+  var FS = 12;
+  function money(v) { return "$" + v.toFixed(2); }
+
+  /* data: copied from the pivot files in analysis/ */
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var STL = [15.84,15.20,15.42,12.92,10.67,9.96,12.10,15.20,24.87,31.11,21.40,17.76];
+  var ORIG = [["Cairo-Memphis",7.53,23.58],["St. Louis",9.96,31.11],["Cincinnati",12.90,38.36],["Lower Ohio",12.27,36.48],["Lower Illinois",16.25,36.70],["Mid-Mississippi",19.27,42.12],["Twin Cities",26.66,44.57]];
+  var YEARS = [["2019",13.97,12.42],["2020",7.87,16.55],["2021",8.97,22.19],["2022",14.10,55.74],["2023",9.66,26.50],["2024",9.54,26.67],["2025",14.05,20.87],["2026*",17.78,27.39]];
+  var MONTHLY = [13.71,16.76,16.23,11.87,11.29,12.37,14.82,16.18,14.37,12.38,10.52,9.38,9.0,7.7,7.86,7.74,7.51,7.62,8.55,9.77,12.16,19.49,19.11,12.91,12.22,11.16,10.71,9.53,10.53,8.47,8.02,11.85,26.68,26.19,15.39,24.63,26.47,23.8,28.38,23.45,13.85,14.24,14.27,15.71,34.51,89.33,45.85,33.17,21.28,15.8,16.16,14.34,9.01,8.49,11.64,16.31,36.37,26.37,16.78,13.09,13.11,13.2,10.6,8.81,9.25,8.68,10.46,18.7,30.22,30.45,18.4,15.54,14.93,17.98,17.85,15.4,13.31,12.63,15.78,18.35,23.32,19.56,19.13,19.11,21.71,24.63,19.71,18.19,18.09,15.47,20.35,24.29,31.01,25.47,22.19];
+
+  function bubble(fig) { var b = fig.querySelector(".bubble"); if (!b) { b = document.createElement("div"); b.className = "bubble"; fig.appendChild(b); } return b; }
+  function place(fig, b, ev, html) { var r = fig.getBoundingClientRect(); b.innerHTML = html; b.classList.add("on"); b.style.left = Math.max(0, Math.min(ev.clientX - r.left + 12, r.width - b.offsetWidth - 4)) + "px"; b.style.top = Math.max(0, ev.clientY - r.top - 34) + "px"; }
+  function hover(fig, node, html) {
+    var b = bubble(fig);
+    node.addEventListener("mousemove", function (ev) { place(fig, b, ev, html); });
+    node.addEventListener("mouseleave", function () { b.classList.remove("on"); });
+    node.addEventListener("touchstart", function (e) { place(fig, b, e.touches[0], html); }, { passive: true });
+  }
+  function frame(fig, W, H) { var s = mk("svg", { viewBox: "0 0 " + W + " " + H, "aria-hidden": "true" }); fig.appendChild(s); return s; }
+  function yAxis(svg, m, W, H, max, step, fmt) {
+    for (var v = 0; v <= max + 1e-9; v += step) {
+      var y = H - m.b - (v / max) * (H - m.t - m.b);
+      mk("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: RULE }, svg);
+      txt(svg, m.l - 8, y + 4, fmt(v), { "text-anchor": "end" });
+    }
+  }
+  function dollars(v) { return "$" + v; }
+
+  var DRAW = {
+    months: function (fig) {
+      var W = 640, H = 360, m = { t: 24, r: 8, b: 30, l: 44 }, max = 35, svg = frame(fig, W, H);
+      yAxis(svg, m, W, H, max, 5, dollars);
+      var bw = (W - m.l - m.r) / 12;
+      STL.forEach(function (v, i) {
+        var c = (i >= 8 && i <= 10) ? HARVEST : (i >= 4 && i <= 6) ? RIVER : GREY;
+        var h = v / max * (H - m.t - m.b), x = m.l + i * bw + bw * .14, y = H - m.b - h;
+        var r = mk("rect", { x: x, y: y, width: bw * .72, height: h, fill: c, "class": "grow", style: "--d:" + (i * 50) + "ms" }, svg);
+        hover(fig, r, "<b>" + MONTHS[i] + "</b>: " + money(v) + " per ton");
+        txt(svg, x + bw * .36, H - m.b + 18, MONTHS[i], { "text-anchor": "middle" });
+        if (i === 5 || i === 9) txt(svg, x + bw * .36, y - 6, money(v), { "text-anchor": "middle", fill: c, "font-weight": 600, "class": "late" });
+      });
+    },
+    origins: function (fig) {
+      var W = 640, H = 380, m = { t: 12, r: 70, b: 28, l: 112 }, max = 50, svg = frame(fig, W, H);
+      var rh = (H - m.t - m.b) / ORIG.length, sc = (W - m.l - m.r) / max;
+      for (var v = 0; v <= max; v += 10) { var x = m.l + v * sc; mk("line", { x1: x, x2: x, y1: m.t, y2: H - m.b, stroke: RULE }, svg); txt(svg, x, H - m.b + 18, "$" + v, { "text-anchor": "middle" }); }
+      ORIG.forEach(function (o, i) {
+        var y = m.t + i * rh;
+        txt(svg, m.l - 8, y + rh * .55, o[0], { "text-anchor": "end", fill: INK });
+        var a = mk("rect", { x: m.l, y: y + rh * .14, width: o[1] * sc, height: rh * .32, fill: RIVER, "class": "growx", style: "--d:" + (i * 60) + "ms" }, svg);
+        var b = mk("rect", { x: m.l, y: y + rh * .5, width: o[2] * sc, height: rh * .32, fill: HARVEST, "class": "growx", style: "--d:" + (i * 60 + 120) + "ms" }, svg);
+        hover(fig, a, "<b>" + o[0] + "</b>, June: " + money(o[1])); hover(fig, b, "<b>" + o[0] + "</b>, October: " + money(o[2]));
+        txt(svg, m.l + o[2] * sc + 6, y + rh * .74, (o[2] / o[1]).toFixed(1) + "x", { fill: HARVEST, "font-weight": 600, "class": "late" });
+      });
+      mk("rect", { x: W - 64, y: m.t + 2, width: 10, height: 10, fill: RIVER }, svg); txt(svg, W - 50, m.t + 11, "June");
+      mk("rect", { x: W - 64, y: m.t + 18, width: 10, height: 10, fill: HARVEST }, svg); txt(svg, W - 50, m.t + 27, "October");
+    },
+    years: function (fig) {
+      var W = 640, H = 360, m = { t: 26, r: 8, b: 30, l: 44 }, max = 60, svg = frame(fig, W, H);
+      yAxis(svg, m, W, H, max, 10, dollars);
+      var gw = (W - m.l - m.r) / YEARS.length;
+      YEARS.forEach(function (d, i) {
+        [1, 2].forEach(function (k) {
+          var v = d[k], h = v / max * (H - m.t - m.b), x = m.l + i * gw + gw * (k === 1 ? .12 : .5), y = H - m.b - h;
+          var r = mk("rect", { x: x, y: y, width: gw * .38, height: h, fill: k === 1 ? RIVER : HARVEST, "class": "grow", style: "--d:" + (i * 70 + k * 60) + "ms" }, svg);
+          hover(fig, r, "<b>" + d[0] + "</b> " + (k === 1 ? "summer" : "fall") + ": " + money(v));
+        });
+        txt(svg, m.l + i * gw + gw * .5, H - m.b + 18, d[0], { "text-anchor": "middle" });
+      });
+      mk("rect", { x: m.l + 6, y: 4, width: 10, height: 10, fill: RIVER }, svg); txt(svg, m.l + 20, 13, "Summer (May to Jul)");
+      mk("rect", { x: m.l + 150, y: 4, width: 10, height: 10, fill: HARVEST }, svg); txt(svg, m.l + 164, 13, "Fall (Sep to Nov)");
+    },
+    spike: function (fig) {
+      var W = 640, H = 360, m = { t: 22, r: 12, b: 30, l: 44 }, max = 100, svg = frame(fig, W, H);
+      yAxis(svg, m, W, H, max, 20, dollars);
+      var n = MONTHLY.length;
+      function sx(i) { return m.l + i / (n - 1) * (W - m.l - m.r); }
+      function sy(v) { return H - m.b - v / max * (H - m.t - m.b); }
+      for (var yr = 2019; yr <= 2026; yr++) {
+        var i0 = (yr - 2019) * 12;
+        txt(svg, sx(i0), H - m.b + 18, String(yr), { "text-anchor": "start" });
+        if (i0 + 8 < n) { var a = sx(i0 + 8), b = sx(Math.min(i0 + 10, n - 1)); mk("rect", { x: a, y: m.t, width: b - a, height: H - m.t - m.b, fill: HARVEST, opacity: .08 }, svg); }
+      }
+      var d = MONTHLY.map(function (v, i) { return (i ? "L" : "M") + sx(i).toFixed(1) + " " + sy(v).toFixed(1); }).join(" ");
+      mk("path", { d: d, stroke: RIVER, "class": "trace", pathLength: 1 }, svg);
+      var pk = 45;
+      mk("circle", { cx: sx(pk), cy: sy(MONTHLY[pk]), r: 5, fill: HARVEST, "class": "late" }, svg);
+      txt(svg, sx(pk) + 10, sy(MONTHLY[pk]) + 4, "Oct 2022: $89.33", { fill: HARVEST, "font-weight": 600, "class": "late" });
+      var hit = mk("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" }, svg), b2 = bubble(fig);
+      function at(ev) { var r = svg.getBoundingClientRect(); var i = Math.round(((ev.clientX - r.left) / r.width * W - m.l) / (W - m.l - m.r) * (n - 1)); i = Math.max(0, Math.min(n - 1, i)); place(fig, b2, ev, "<b>" + MONTHS[i % 12] + " " + (2019 + Math.floor(i / 12)) + "</b>: " + money(MONTHLY[i])); }
+      hit.addEventListener("mousemove", at);
+      hit.addEventListener("touchstart", function (e) { at(e.touches[0]); }, { passive: true });
+      hit.addEventListener("mouseleave", function () { b2.classList.remove("on"); });
+    }
+  };
+
+  document.querySelectorAll("figure.viz").forEach(function (f) { FS = Math.min(22, Math.max(12, Math.round(12 * 560 / Math.max(f.clientWidth, 280)))); DRAW[f.dataset.viz](f); });
+
+  var watch = document.querySelectorAll("figure.viz, .band-title");
+  if ("IntersectionObserver" in window && !still) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("seen"); io.unobserve(e.target); } }); }, { threshold: .3 });
+    watch.forEach(function (w) { io.observe(w); });
+  } else { watch.forEach(function (w) { w.classList.add("seen"); }); }
+
+  if (!still) document.querySelectorAll(".big[data-to]").forEach(function (el) {
+    var to = +el.dataset.to, dec = +(el.dataset.dec || 0), pre = el.dataset.pre || "", t0 = null;
+    function step(t) { if (!t0) t0 = t; var p = Math.min(1, (t - t0) / 1200), e = 1 - Math.pow(1 - p, 3); el.textContent = pre + (to * e).toFixed(dec); if (p < 1) requestAnimationFrame(step); }
+    setTimeout(function () { requestAnimationFrame(step); }, 1300);
+  });
+
+  var meter = document.getElementById("meter");
+  function onScroll() { var h = document.documentElement.scrollHeight - innerHeight; meter.style.transform = "scaleX(" + (h > 0 ? scrollY / h : 0) + ")"; }
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  var stops = Array.prototype.slice.call(document.querySelectorAll("[data-stop]"));
+  addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("input, textarea")) return;
+    var dir = (e.key === "ArrowDown" || e.key === "ArrowRight") ? 1 : (e.key === "ArrowUp" || e.key === "ArrowLeft") ? -1 : 0;
+    if (!dir) return;
+    e.preventDefault();
+    var cur = 0; stops.forEach(function (s, i) { if (s.getBoundingClientRect().top < 80) cur = i; });
+    stops[Math.max(0, Math.min(stops.length - 1, cur + dir))].scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+  });
+})();
+</script>
 </body>
 </html>
