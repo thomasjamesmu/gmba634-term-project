@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freight Timing Decisions</title>
+<meta name="description" content="Thomas James, GMBA 634 term project: two freight decisions from public BTS data, on when to book grain barges and how to size port berths.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --surface: #ffffff;
+    --ink: #13223a;
+    --muted: #55627a;
+    --line: #dfe2e8;
+    --river: #1d4ed8;
+    --harvest: #c2410c;
+    --soft: #f1efe7;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1726; --surface: #16213a; --ink: #eef1f6; --muted: #a9b3c6;
+      --line: #2a3654; --river: #7aa2ff; --harvest: #fb8a4c; --soft: #1b2742;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1726; --surface: #16213a; --ink: #eef1f6; --muted: #a9b3c6;
+    --line: #2a3654; --river: #7aa2ff; --harvest: #fb8a4c; --soft: #1b2742;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 1.0625rem; line-height: 1.65; }
+  a { color: var(--river); text-underline-offset: 3px; }
+  a:focus-visible { outline: 3px solid var(--harvest); outline-offset: 3px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+  header.top { border-bottom: 1px solid var(--line); font-size: .92rem; color: var(--muted); }
+  header.top .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem; padding-top: .9rem; padding-bottom: .9rem; }
+  header.top strong { color: var(--ink); font-weight: 600; }
+  nav a { margin-right: 1rem; text-decoration: none; color: var(--muted); }
+  nav a:hover { color: var(--ink); }
+
+  .hero { padding: 3.5rem 0 2.5rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; font-weight: 600; color: var(--harvest); margin: 0 0 .8rem; }
+  h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(2.1rem, 6vw, 3.8rem); line-height: 1.05; margin: 0 0 1.5rem; max-width: 20ch; }
+  .ask { border-left: 4px solid var(--harvest); padding: .4rem 0 .4rem 1.1rem; font-size: clamp(1.1rem, 2.4vw, 1.35rem); line-height: 1.5; max-width: 60ch; margin: 0 0 1.5rem; }
+  .byline { color: var(--muted); max-width: 62ch; margin: 0; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2.2rem 0 0; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.2rem; }
+  .stat b { display: block; font-family: var(--serif); font-size: 2.1rem; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: .92rem; }
+  .stat.h b { color: var(--harvest); } .stat.r b { color: var(--river); }
+
+  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.15; margin: 0 0 1rem; }
+  section { padding: 2.8rem 0; border-top: 1px solid var(--line); }
+  .lead { max-width: 66ch; }
+  figure { margin: 1.6rem 0 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: .75rem; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { color: #55627a; font-size: .88rem; padding: .6rem .3rem 0; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+  .card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem; text-decoration: none; color: var(--ink); transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: var(--river); transform: translateY(-2px); }
+  .card .n { font-family: var(--serif); color: var(--harvest); font-size: 1.4rem; }
+  .card h3 { margin: .2rem 0 .4rem; font-size: 1.05rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+  .scqr { display: grid; gap: .9rem; margin-top: 1.2rem; max-width: 72ch; }
+  .scqr p { margin: 0; }
+  .scqr strong { color: var(--harvest); }
+  .note { background: var(--soft); border-radius: 12px; padding: 1.1rem 1.3rem; margin-top: 1.4rem; max-width: 72ch; }
+  .note p { margin: .3rem 0; }
+
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; margin-top: 1rem; }
+  .tablewrap { overflow-x: auto; }
+  th, td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  footer { border-top: 1px solid var(--line); padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <span><strong>Thomas James</strong> · GMBA 634 term project · Gannon University</span>
+    <nav aria-label="Sections"><a href="#barges">Barges</a><a href="#ports">Ports</a><a href="#work">The work</a><a href="#ai">AI use</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <p class="eyebrow">Freight timing, from public BTS data</p>
+    <h1>Book barges before harvest. Size berths by boxes, not ships.</h1>
+    <p class="ask">I am asking a grain exporter's transportation buyer to contract fall 2027 barge capacity out of St. Louis by July 2027, instead of buying on the spot market at harvest.</p>
+    <p class="byline">Thomas James, MBA student. I turn public freight data into decisions a manager can act on. This is a class project, not paid or client work.</p>
+    <div class="stats">
+      <div class="stat r"><b>$9.96</b><span>per ton: St. Louis barge rate, June average, 2019 to 2025</span></div>
+      <div class="stat h"><b>$31.11</b><span>per ton: the October average, 3.1 times June</span></div>
+      <div class="stat r"><b>−16.1%</b><span>container volume at the top 10 US ports, 2021 to 2023</span></div>
+      <div class="stat h"><b>+2.2%</b><span>container ship calls at the same ports, same years</span></div>
+    </div>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <h2>The four deliverables</h2>
+      <p class="lead">Everything for the project is here. Each card opens one piece.</p>
+      <div class="cards">
+        <a class="card" href="./dashboard/main-chart.png"><div class="n">1</div><h3>Business visualization</h3><p>Barge rates by month (main chart), plus port volume versus ship calls. Made in Python; a Tableau Public version is coming.</p></a>
+        <a class="card" href="./case/executive-case.pdf"><div class="n">2</div><h3>Written executive case</h3><p>Book fall barge space by July, and size new container berths by TEU volume, not ship calls. PDF, 3 pages.</p></a>
+        <a class="card" href="./ai-component/ai-check.pdf"><div class="n">3</div><h3>AI/automation component</h3><p>Path B: what the AI did, every number I checked, and the two places it was wrong.</p></a>
+        <a class="card" href="https://github.com/thomasjamesmu/gmba634-term-project"><div class="n">4</div><h3>This site and repository</h3><p>The repo holds the charts, the PDFs and the pivot tables behind every number.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="barges">
+    <div class="wrap">
+      <p class="eyebrow">Decision 1 · dataset OP-2</p>
+      <h2>Grain barge rates triple from June to October</h2>
+      <div class="scqr">
+        <p><strong>Situation.</strong> Grain moving down the Mississippi River System to export terminals is priced weekly, in dollars per ton, at seven river origins.</p>
+        <p><strong>Complication.</strong> The rate is highly seasonal. At St. Louis, from 2019 to 2025, it averaged $9.96 per ton in June and $31.11 in October. October was the most expensive month at all seven origins. In a bad year the peak is far worse: the October 2022 St. Louis average was $89.33.</p>
+        <p><strong>Question.</strong> Should the buyer keep buying fall space on the spot market at harvest?</p>
+        <p><strong>Resolution.</strong> Contract most fall 2027 capacity by July 2027, when rates are seasonally lowest, and keep a small spot share for flexibility.</p>
+      </div>
+      <figure>
+        <img src="./dashboard/main-chart.png" alt="Bar chart of the average downbound grain barge rate from St. Louis by calendar month, 2019 to 2025. Rates are lowest in May to July (about $10 to $12 per ton) and highest in September to November, peaking at $31.11 in October." loading="lazy">
+        <figcaption>Weekly St. Louis rates averaged by calendar month, 2019 to 2025. Source: BTS Supply Chain and Freight Indicators (USDA AMS data).</figcaption>
+      </figure>
+      <div class="note">
+        <p><b>What would change my recommendation:</b> if the forward price offered in July 2027 is above $25.79 per ton, the 2019 to 2025 September to November spot average at St. Louis.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="ports">
+    <div class="wrap">
+      <p class="eyebrow">Decision 2 · dataset OP-3</p>
+      <h2>Ships kept calling while container volume fell</h2>
+      <p class="ask">I am asking a port authority's capital planning committee to base its next container-berth expansion on container volume (TEUs), not on the count of ship calls, at its 2027 capital review.</p>
+      <p class="lead">At the 10 largest US container ports, volume fell from 36.44 million to 30.57 million TEUs between 2021 and 2023, while container ship calls rose from 11,052 to 11,300. Each call handled fewer boxes: 2,705 TEUs per call in 2023, down from 3,297. Houston was the only one of the ten where volume grew.</p>
+      <figure>
+        <img src="./dashboard/ports-chart.png" alt="Horizontal bar chart comparing the 2021 to 2023 change in container volume and in container vessel calls at the 10 largest US container ports. Volume fell at nine of the ten ports while calls rose at six of them." loading="lazy">
+        <figcaption>Top 10 ports by 2023 container TEUs. Source: BTS Port Data.</figcaption>
+      </figure>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Port</th><th class="num">TEUs 2021</th><th class="num">TEUs 2023</th><th class="num">Change</th><th class="num">Calls 2021</th><th class="num">Calls 2023</th><th class="num">Change</th></tr></thead>
+          <tbody>
+            <tr><td>Los Angeles</td><td class="num">7,037,986</td><td class="num">5,726,784</td><td class="num">−18.6%</td><td class="num">876.5</td><td class="num">871</td><td class="num">−0.6%</td></tr>
+            <tr><td>New York / New Jersey</td><td class="num">6,306,810</td><td class="num">5,343,184</td><td class="num">−15.3%</td><td class="num">2,096.5</td><td class="num">2,253.5</td><td class="num">+7.5%</td></tr>
+            <tr><td>Long Beach</td><td class="num">6,420,456</td><td class="num">4,786,383</td><td class="num">−25.5%</td><td class="num">895</td><td class="num">656.5</td><td class="num">−26.6%</td></tr>
+            <tr><td>Savannah</td><td class="num">4,235,900</td><td class="num">3,774,774</td><td class="num">−10.9%</td><td class="num">1,501.5</td><td class="num">1,594</td><td class="num">+6.2%</td></tr>
+            <tr><td>Houston</td><td class="num">2,767,842</td><td class="num">3,209,304</td><td class="num">+15.9%</td><td class="num">930</td><td class="num">1,014</td><td class="num">+9.0%</td></tr>
+            <tr><td>Virginia</td><td class="num">2,769,965</td><td class="num">2,499,394</td><td class="num">−9.8%</td><td class="num">1,432</td><td class="num">1,664</td><td class="num">+16.2%</td></tr>
+            <tr><td>Charleston</td><td class="num">2,172,194</td><td class="num">1,917,209</td><td class="num">−11.7%</td><td class="num">1,248.5</td><td class="num">1,220.5</td><td class="num">−2.2%</td></tr>
+            <tr><td>Oakland</td><td class="num">1,957,162</td><td class="num">1,446,495</td><td class="num">−26.1%</td><td class="num">768.5</td><td class="num">884</td><td class="num">+15.0%</td></tr>
+            <tr><td>Tacoma</td><td class="num">1,848,497</td><td class="num">1,040,830</td><td class="num">−43.7%</td><td class="num">443.5</td><td class="num">273.5</td><td class="num">−38.3%</td></tr>
+            <tr><td>PortMiami</td><td class="num">920,374</td><td class="num">824,202</td><td class="num">−10.4%</td><td class="num">860</td><td class="num">869</td><td class="num">+1.0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <p><b>What would change my recommendation:</b> if a port's TEU volume returns above its 2021 level while calls keep rising, the berths really are busier. Houston already meets this test.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="ai">
+    <div class="wrap">
+      <h2>AI use disclosure</h2>
+      <p class="lead">Claude, an AI assistant, downloaded both datasets from data.bts.gov, filtered and pivoted them with Python scripts, drew both charts, and drafted this site, the README, the executive case and the AI check. I chose the two datasets from the course menu and approve what is published. Every number here is checked against the pivot files in the repository's analysis folder. The AI made two mistakes that were fixed before publishing. It saved raw files the course menu marks link-only, for two datasets I later dropped, and it first included small ports whose numbers look like reporting breaks. Details are in the <a href="./ai-component/ai-check.pdf">AI check</a>.</p>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="wrap">
+      <h2>Data and honesty note</h2>
+      <div class="scqr">
+        <p><strong>OP-2.</strong> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a>, indicator "Downbound Grain Barge Rates" (from USDA Agricultural Marketing Service). Accessed Nov 23, 2026. Public Domain U.S. Government. One row is one week's spot rate at one origin, Jan 2019 to Nov 10, 2026. I kept the 2,605 weeks that have a rate. It does not show contract prices or any firm's own costs.</p>
+        <p><strong>OP-3.</strong> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/5rpz-kgm9">Port Data</a>. Accessed Nov 23, 2026. Public Domain. One row is one port, one year and one cargo measure. The data end in 2023, calls exist only for 2020 to 2023, and some calls are recorded in halves; I used them as published. It does not show ship size or berth hours.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Thomas James · GMBA 634, Gannon University · <a href="https://github.com/thomasjamesmu/gmba634-term-project">Repository on GitHub</a> · <a href="https://github.com/thomasjamesmu">github.com/thomasjamesmu</a>
+  </div>
+</footer>
+</body>
+</html>
