@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book Barges Before Harvest</title>
-<meta name="description" content="Thomas James, GMBA 634 term project: when a grain exporter should buy barge capacity, from seven years of public BTS barge rates.">
+<meta name="description" content="Thomas James, GMBA 634 term project: when a grain exporter should buy barge capacity, from three dataset pages: BTS barge rates, port grain tonnage and diesel prices.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
@@ -119,7 +119,7 @@
 <main>
   <section class="hero" data-stop>
     <div class="wrap">
-      <p class="kicker">Mississippi River grain barge rates, 2019 to 2026</p>
+      <p class="kicker">Three public datasets: barge rates, grain ports and diesel, 2019 to 2026</p>
       <h1><span class="ln"><span style="--i:0">Book barges</span></span><span class="ln"><span style="--i:1">before harvest</span></span></h1>
       <p class="ask">I am asking a grain exporter's transportation buyer to contract fall 2027 barge capacity out of St. Louis by July 2027, instead of buying on the spot market at harvest.</p>
       <ul class="stats" aria-label="The findings in numbers">
@@ -130,14 +130,14 @@
         <li class="h" style="--i:4"><a href="#spike"><span class="big" data-to="89.33" data-pre="$" data-dec="2">$89.33</span><span class="lab">October 2022 average, the extreme case</span></a></li>
       </ul>
       <p class="tip-keys">Presenting? Use the arrow keys to step through the findings.</p>
-      <section class="check" aria-label="Project deliverables">
-        <h2>Where to check the work</h2>
+      <section class="check" aria-label="Dataset pages">
+        <h2>The three dataset pages</h2>
         <ul>
-          <li><a href="./case/executive-case.pdf">Executive case (PDF)</a><br>The ask, the evidence and the reversal price, in 2 pages.</li>
-          <li><a href="./ai-component/ai-check.pdf">AI check (PDF)</a><br>What the AI did, each number checked, and where it was wrong.</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/barge-rates.md">1. Grain barge rates (OP-2)</a><br>Weekly spot rates at seven river origins. When is barge space cheap?</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/grain-ports.md">2. Grain ports (OP-3)</a><br>Corn and soybean tons by port. Where does the barge grain end up?</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/diesel-prices.md">3. Diesel prices (OP-2)</a><br>Weekly US diesel price. Is fuel pushing freight costs up again?</li>
           <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/analysis/number-trail.md">Number trail</a><br>One line for every number on this page, with its pivot cell.</li>
-          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/barge-rates.md">Dataset page</a><br>What one row means, filters and limits.</li>
-          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/data/SOURCES.md">Sources</a><br>Publisher, link, date accessed and license.</li>
+          <li><a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/data/SOURCES.md">Sources</a><br>Publisher, link, date accessed and license for all three.</li>
         </ul>
       </section>
     </div>
@@ -199,6 +199,34 @@
     </div>
   </section>
 
+  <section class="band r" aria-labelledby="context-h">
+    <div class="wrap">
+      <div class="band-title"><h2 id="context-h">Where the grain goes, and what fuel costs</h2></div>
+
+      <article class="finding" id="ports" data-stop>
+        <div>
+          <h3>Four river ports handle three quarters of the grain</h3>
+          <p>In 2023, four lower-Mississippi ports handled 75.8% of the corn and soybean tons listed in BTS port data, up from 69.0% in 2020. The Port of South Louisiana alone handled 73.5 million tons, 53.6%. The barge rate is the price of reaching them.</p>
+          <p class="src">BTS Port Data (OP-3), top 5 food and farm commodities, corn plus soybeans, short tons handled in 2023, in millions. Orange bars are the four lower-Mississippi ports. <a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/grain-ports.md">Dataset page</a>.</p>
+        </div>
+        <figure class="viz" data-viz="ports" role="img" aria-label="Bar chart of corn plus soybean tons handled at the top 10 ports in 2023. South Louisiana 73.5 million tons, New Orleans 15.0, Greater Baton Rouge 7.8, Plaquemines 7.5, Kalama 7.2, Mid-America 7.2, Virginia 4.1, Tacoma 3.1, Southern Indiana 2.9, Seattle 2.7. The four lower-Mississippi ports are highlighted.">
+          <noscript><img src="dashboard/grain-ports-chart.png" alt="Corn and soybean tons by port, 2023"></noscript>
+        </figure>
+      </article>
+
+      <article class="finding" id="diesel" data-stop>
+        <div>
+          <h3>Diesel is back above its 2022 peak</h3>
+          <p>The US diesel price averaged $6.29 a gallon in September 2026, above the June 2022 peak of $5.75. October 2026 was 70% above October 2025. Diesel and the St. Louis barge rate moved together (correlation 0.46), which is one more reason not to wait for the fall spot market.</p>
+          <p class="src">BTS Supply Chain and Freight Indicators (OP-2), U.S. Diesel Sales Prices (from EIA). Weekly prices averaged by month. <a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/datasets/diesel-prices.md">Dataset page</a>.</p>
+        </div>
+        <figure class="viz" data-viz="diesel" role="img" aria-label="Line chart of the monthly average US diesel price from January 2019 to November 2026. It falls to its low in 2020, peaks at $5.75 in June 2022, and rises again to $6.29 in September 2026.">
+          <noscript><img src="dashboard/diesel-chart.png" alt="Monthly US diesel price, 2019 to 2026"></noscript>
+        </figure>
+      </article>
+    </div>
+  </section>
+
   <section class="closing" id="decision" data-stop>
     <div class="wrap">
       <h2>The recommendation</h2>
@@ -211,10 +239,10 @@
     <div class="wrap">
       <h2>How this was made</h2>
       <ul>
-        <li><b>Data:</b> U.S. DOT Bureau of Transportation Statistics, <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a>, indicator "Downbound Grain Barge Rates" (from USDA Agricultural Marketing Service). Course menu ID OP-2. Accessed November 23, 2026. Public Domain U.S. Government.</li>
-        <li><b>One row</b> is one week's spot rate, in dollars per ton, at one of seven river origins. I kept the 2,605 weeks that have a rate; 272 of 2,877 rows are blank.</li>
-        <li><b>What it cannot show:</b> contract or forward prices, any firm's own costs, or why rates move. River levels and harvest size are likely causes, but that is reasoning, not a finding in this data.</li>
-        <li><b>AI use:</b> Claude, an AI assistant, downloaded the data, built the pivots with scripts, drew the charts, and drafted this page, the README, the case and the AI check. I chose the dataset and approve what is published. Every number is checked against the pivot files; see the <a href="./ai-component/ai-check.pdf">AI check</a>. The charts are not Tableau charts.</li>
+        <li><b>Data:</b> three U.S. DOT Bureau of Transportation Statistics datasets, all accessed November 23, 2026 and Public Domain: <a href="https://data.bts.gov/d/y5ut-ibwt">Supply Chain and Freight Indicators</a> (OP-2), indicators "Downbound Grain Barge Rates" (from USDA AMS) and "U.S. Diesel Sales Prices" (from EIA); and <a href="https://data.bts.gov/d/5rpz-kgm9">Port Data</a> (OP-3), corn and soybean tons by port.</li>
+        <li><b>One row</b> is one week's barge spot rate at one river origin (2,605 weeks with a rate, 272 blank), one week's national diesel price (411 weeks), or one port's tons of one commodity in one year (157 rows, 2020 to 2023).</li>
+        <li><b>What it cannot show:</b> contract or forward prices, any firm's own costs, or why rates move. Port tons include imports and domestic cargo and stop in 2023. Diesel is a retail pump price, not marine fuel. Correlation is not cause.</li>
+        <li><b>AI use:</b> Claude, an AI assistant, downloaded the data, built the pivots with scripts, drew the charts, and drafted this page, the README and the dataset pages. I chose the datasets and approve what is published. Every number is checked against the pivot files; see the <a href="https://github.com/thomasjamesmu/gmba634-term-project/blob/main/analysis/number-trail.md">number trail</a>.</li>
       </ul>
     </div>
   </section>
@@ -243,6 +271,8 @@
   var STL = [15.84,15.20,15.42,12.92,10.67,9.96,12.10,15.20,24.87,31.11,21.40,17.76];
   var ORIG = [["Cairo-Memphis",7.53,23.58],["St. Louis",9.96,31.11],["Cincinnati",12.90,38.36],["Lower Ohio",12.27,36.48],["Lower Illinois",16.25,36.70],["Mid-Mississippi",19.27,42.12],["Twin Cities",26.66,44.57]];
   var YEARS = [["2019",13.97,12.42],["2020",7.87,16.55],["2021",8.97,22.19],["2022",14.10,55.74],["2023",9.66,26.50],["2024",9.54,26.67],["2025",14.05,20.87],["2026*",17.78,27.39]];
+  var PORTS = [["South Louisiana",73.55,1],["New Orleans",15.03,1],["Baton Rouge",7.81,1],["Plaquemines",7.54,1],["Kalama, WA",7.19,0],["Mid-America",7.18,0],["Virginia",4.06,0],["Tacoma, WA",3.14,0],["Southern Indiana",2.94,0],["Seattle, WA",2.71,0]];
+  var DIESEL = [2.98,2.997,3.076,3.121,3.161,3.088,3.045,3.005,3.016,3.053,3.069,3.055,3.047,2.909,2.729,2.493,2.392,2.408,2.434,2.429,2.414,2.389,2.432,2.585,2.681,2.847,3.152,3.13,3.217,3.287,3.339,3.35,3.384,3.612,3.727,3.641,3.724,4.032,5.104,5.12,5.571,5.753,5.486,5.013,4.993,5.211,5.255,4.713,4.576,4.413,4.21,4.099,3.915,3.802,3.882,4.37,4.563,4.507,4.254,3.972,3.854,4.044,4.022,4.002,3.822,3.722,3.81,3.7,3.558,3.585,3.522,3.494,3.634,3.675,3.585,3.566,3.499,3.599,3.778,3.744,3.748,3.678,3.822,3.615,3.522,3.722,4.921,5.501,5.599,5.024,4.955,5.462,6.291,6.252,6.119];
   var MONTHLY = [13.71,16.76,16.23,11.87,11.29,12.37,14.82,16.18,14.37,12.38,10.52,9.38,9.0,7.7,7.86,7.74,7.51,7.62,8.55,9.77,12.16,19.49,19.11,12.91,12.22,11.16,10.71,9.53,10.53,8.47,8.02,11.85,26.68,26.19,15.39,24.63,26.47,23.8,28.38,23.45,13.85,14.24,14.27,15.71,34.51,89.33,45.85,33.17,21.28,15.8,16.16,14.34,9.01,8.49,11.64,16.31,36.37,26.37,16.78,13.09,13.11,13.2,10.6,8.81,9.25,8.68,10.46,18.7,30.22,30.45,18.4,15.54,14.93,17.98,17.85,15.4,13.31,12.63,15.78,18.35,23.32,19.56,19.13,19.11,21.71,24.63,19.71,18.19,18.09,15.47,20.35,24.29,31.01,25.47,22.19];
 
   function bubble(fig) { var b = fig.querySelector(".bubble"); if (!b) { b = document.createElement("div"); b.className = "bubble"; fig.appendChild(b); } return b; }
@@ -306,6 +336,37 @@
       });
       mk("rect", { x: m.l + 6, y: 4, width: 10, height: 10, fill: RIVER }, svg); txt(svg, m.l + 20, 13, "Summer (May to Jul)");
       mk("rect", { x: m.l + 150, y: 4, width: 10, height: 10, fill: HARVEST }, svg); txt(svg, m.l + 164, 13, "Fall (Sep to Nov)");
+    },
+    ports: function (fig) {
+      var W = 640, H = 400, m = { t: 10, r: 50, b: 28, l: 150 }, max = 80, svg = frame(fig, W, H);
+      var rh = (H - m.t - m.b) / PORTS.length, sc = (W - m.l - m.r) / max;
+      for (var v = 0; v <= max; v += 20) { var x = m.l + v * sc; mk("line", { x1: x, x2: x, y1: m.t, y2: H - m.b, stroke: RULE }, svg); txt(svg, x, H - m.b + 18, v + "M", { "text-anchor": "middle" }); }
+      PORTS.forEach(function (p, i) {
+        var y = m.t + i * rh, c = p[2] ? HARVEST : GREY;
+        txt(svg, m.l - 8, y + rh * .62, p[0], { "text-anchor": "end", fill: INK });
+        var r = mk("rect", { x: m.l, y: y + rh * .18, width: p[1] * sc, height: rh * .64, fill: c, "class": "growx", style: "--d:" + (i * 50) + "ms" }, svg);
+        hover(fig, r, "<b>" + p[0] + "</b>: " + p[1].toFixed(1) + " million tons" + (p[2] ? " (lower Mississippi)" : ""));
+        txt(svg, m.l + p[1] * sc + 6, y + rh * .62, p[1].toFixed(1), { fill: c === GREY ? MUTED : HARVEST, "font-weight": 600, "class": "late" });
+      });
+    },
+    diesel: function (fig) {
+      var W = 640, H = 360, m = { t: 22, r: 12, b: 30, l: 44 }, max = 7, svg = frame(fig, W, H);
+      yAxis(svg, m, W, H, max, 1, dollars);
+      var n = DIESEL.length;
+      function sx(i) { return m.l + i / (n - 1) * (W - m.l - m.r); }
+      function sy(v) { return H - m.b - v / max * (H - m.t - m.b); }
+      for (var yr = 2019; yr <= 2026; yr++) txt(svg, sx((yr - 2019) * 12), H - m.b + 18, String(yr), { "text-anchor": "start" });
+      var d = DIESEL.map(function (v, i) { return (i ? "L" : "M") + sx(i).toFixed(1) + " " + sy(v).toFixed(1); }).join(" ");
+      mk("path", { d: d, stroke: RIVER, "class": "trace", pathLength: 1 }, svg);
+      [[41, "Jun 2022: $5.75", -8, "end"], [92, "Sep 2026: $6.29", -8, "end"]].forEach(function (k) {
+        mk("circle", { cx: sx(k[0]), cy: sy(DIESEL[k[0]]), r: 5, fill: HARVEST, "class": "late" }, svg);
+        txt(svg, sx(k[0]) + k[2], sy(DIESEL[k[0]]) - 8, k[1], { fill: HARVEST, "font-weight": 600, "class": "late", "text-anchor": k[3] });
+      });
+      var hit = mk("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" }, svg), b2 = bubble(fig);
+      function at(ev) { var r = svg.getBoundingClientRect(); var i = Math.round(((ev.clientX - r.left) / r.width * W - m.l) / (W - m.l - m.r) * (n - 1)); i = Math.max(0, Math.min(n - 1, i)); place(fig, b2, ev, "<b>" + MONTHS[i % 12] + " " + (2019 + Math.floor(i / 12)) + "</b>: $" + DIESEL[i].toFixed(2) + " a gallon"); }
+      hit.addEventListener("mousemove", at);
+      hit.addEventListener("touchstart", function (e) { at(e.touches[0]); }, { passive: true });
+      hit.addEventListener("mouseleave", function () { b2.classList.remove("on"); });
     },
     spike: function (fig) {
       var W = 640, H = 360, m = { t: 22, r: 12, b: 30, l: 44 }, max = 100, svg = frame(fig, W, H);
