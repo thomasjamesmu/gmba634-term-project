@@ -1,0 +1,81 @@
+origin,month,weeks_with_a_rate,avg_dollars_per_ton
+Cairo-Memphis,01,31,10.29
+Cairo-Memphis,02,28,10.31
+Cairo-Memphis,03,31,10.62
+Cairo-Memphis,04,31,9.28
+Cairo-Memphis,05,30,7.91
+Cairo-Memphis,06,30,7.53
+Cairo-Memphis,07,31,8.57
+Cairo-Memphis,08,31,12.17
+Cairo-Memphis,09,30,20.91
+Cairo-Memphis,10,31,23.58
+Cairo-Memphis,11,30,15.28
+Cairo-Memphis,12,32,11.76
+Cincinnati,01,31,19.98
+Cincinnati,02,27,19.92
+Cincinnati,03,30,20.07
+Cincinnati,04,31,16.87
+Cincinnati,05,30,14.19
+Cincinnati,06,30,12.9
+Cincinnati,07,31,14.39
+Cincinnati,08,31,18.96
+Cincinnati,09,30,30.69
+Cincinnati,10,31,38.36
+Cincinnati,11,30,28.51
+Cincinnati,12,32,21.83
+Lower Illinois,01,31,23.63
+Lower Illinois,02,28,22.82
+Lower Illinois,03,31,23.01
+Lower Illinois,04,31,20.35
+Lower Illinois,05,27,17.08
+Lower Illinois,06,26,16.25
+Lower Illinois,07,27,19.17
+Lower Illinois,08,27,21.81
+Lower Illinois,09,25,32.34
+Lower Illinois,10,31,36.7
+Lower Illinois,11,30,29.06
+Lower Illinois,12,32,24.76
+Lower Ohio,01,31,19.01
+Lower Ohio,02,27,18.97
+Lower Ohio,03,30,19.09
+Lower Ohio,04,31,16.07
+Lower Ohio,05,30,13.49
+Lower Ohio,06,30,12.27
+Lower Ohio,07,31,13.69
+Lower Ohio,08,31,18.04
+Lower Ohio,09,30,29.19
+Lower Ohio,10,31,36.48
+Lower Ohio,11,30,27.11
+Lower Ohio,12,32,20.76
+Mid-Mississippi,02,4,24.02
+Mid-Mississippi,03,19,30.49
+Mid-Mississippi,04,25,24.72
+Mid-Mississippi,05,26,21.17
+Mid-Mississippi,06,27,19.27
+Mid-Mississippi,07,31,22.51
+Mid-Mississippi,08,31,25.32
+Mid-Mississippi,09,30,35.03
+Mid-Mississippi,10,31,42.12
+Mid-Mississippi,11,30,32.84
+Mid-Mississippi,12,17,30.08
+St. Louis,01,31,15.84
+St. Louis,02,28,15.2
+St. Louis,03,31,15.42
+St. Louis,04,31,12.92
+St. Louis,05,27,10.67
+St. Louis,06,27,9.96
+St. Louis,07,31,12.1
+St. Louis,08,31,15.2
+St. Louis,09,30,24.87
+St. Louis,10,31,31.11
+St. Louis,11,30,21.4
+St. Louis,12,32,17.76
+Twin Cities,03,9,35.58
+Twin Cities,04,25,31.38
+Twin Cities,05,26,27.95
+Twin Cities,06,27,26.66
+Twin Cities,07,31,29.09
+Twin Cities,08,31,32.25
+Twin Cities,09,30,40.44
+Twin Cities,10,31,44.57
+Twin Cities,11,23,36.99
